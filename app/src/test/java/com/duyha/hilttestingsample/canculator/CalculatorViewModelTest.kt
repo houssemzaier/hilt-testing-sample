@@ -1,10 +1,9 @@
 package com.duyha.hilttestingsample.canculator
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.duyha.hilttestingsample.Calculator
-import com.duyha.hilttestingsample.Event
 import com.duyha.hilttestingsample.R
 import com.duyha.hilttestingsample.calulator.CalculatorViewModel
+import com.duyha.hilttestingsample.domain.Calculator
 import com.duyha.hilttestingsample.getOrAwaitValue
 import io.mockk.every
 import io.mockk.mockk
@@ -16,8 +15,8 @@ import org.junit.Test
 
 class CalculatorViewModelTest {
 
-    private lateinit var calculator: Calculator
-    private lateinit var viewModel: CalculatorViewModel
+    private lateinit var calculatorMock: Calculator
+    private lateinit var sut: CalculatorViewModel
 
     private val textA = "4"
     private val a = textA.toInt()
@@ -30,40 +29,40 @@ class CalculatorViewModelTest {
 
     @Before
     fun setUp() {
-        calculator = mockk<Calculator>()
-        viewModel = CalculatorViewModel(calculator)
+        calculatorMock = mockk()
+        sut = CalculatorViewModel(calculatorMock)
     }
 
     @Test
     fun test_SumReturnFromCalculator_LiveDataChanged() {
         //Given
-        every { calculator.sum(a, b) } returns sum
+        every { calculatorMock.sum(a, b) } returns sum
         //When
-        viewModel.onSumClick(textA, textB)
+        sut.onSumClick(textA, textB)
         //Then
-        verify { calculator.sum(a, b) }
-        assertEquals(sum, viewModel.sum.getOrAwaitValue())
+        verify { calculatorMock.sum(a, b) }
+        assertEquals(sum, sut.sum.getOrAwaitValue())
     }
 
     @Test
     fun test_EmptyTextA_ShowMessage() {
         //Given
-        every { calculator.sum(a, b) } returns sum
+        every { calculatorMock.sum(a, b) } returns sum
         //When
-        viewModel.onSumClick("", textB)
+        sut.onSumClick("", textB)
         //Then
-        assertEquals(0, viewModel.sum.getOrAwaitValue())
-        assertEquals(R.string.msg_input_a, viewModel.msg.getOrAwaitValue().peekContent())
+        assertEquals(0, sut.sum.getOrAwaitValue())
+        assertEquals(R.string.msg_input_a, sut.msg.getOrAwaitValue().peekContent())
     }
 
     @Test
     fun test_EmptyTextB_ShowMessage() {
         //Given
-        every { calculator.sum(a, b) } returns sum
+        every { calculatorMock.sum(a, b) } returns sum
         //When
-        viewModel.onSumClick(textA, "")
+        sut.onSumClick(textA, "")
         //Then
-        assertEquals(0, viewModel.sum.getOrAwaitValue())
-        assertEquals(R.string.msg_input_b, viewModel.msg.getOrAwaitValue().peekContent())
+        assertEquals(0, sut.sum.getOrAwaitValue())
+        assertEquals(R.string.msg_input_b, sut.msg.getOrAwaitValue().peekContent())
     }
 }

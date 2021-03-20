@@ -1,4 +1,4 @@
-package com.duyha.hilttestingsample
+package com.duyha.hilttestingsample.domain
 
 class Calculator {
 

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.StringRes
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.duyha.hilttestingsample.R
 import com.google.android.material.snackbar.Snackbar
@@ -24,23 +23,21 @@ class CalculatorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calculator)
 
-        viewModel = ViewModelProvider(this, viewModelFactory).get(CalculatorViewModel::class.java)
-        viewModel.sum.observe(this, Observer {
+        viewModel = ViewModelProvider(this, viewModelFactory)[CalculatorViewModel::class.java]
+
+        viewModel.sum.observe(this) {
             tvSum.text = it.toString()
-        })
-        viewModel.msg.observe(this, Observer {
-            it.getContentIfNotHandled()?.let { msg ->
+        }
+        viewModel.msg.observe(this) { event ->
+            event.getContentIfNotHandledOrNull()?.let { msg ->
                 showMessage(msg)
             }
-        })
+        }
 
     }
 
     private fun showMessage(@StringRes msgId: Int) {
-        val msg = getString(msgId)
-        //Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-        Snackbar.make(rootView, msgId, Snackbar.LENGTH_LONG).show()
-
+          Snackbar.make(rootView, msgId, Snackbar.LENGTH_LONG).show()
     }
 
     fun onSumClick(view: View) {
@@ -49,8 +46,7 @@ class CalculatorActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard() {
-        val view = this.currentFocus
-        view?.let { v ->
+        currentFocus?.let { v ->
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             imm?.hideSoftInputFromWindow(v.windowToken, 0)
         }
